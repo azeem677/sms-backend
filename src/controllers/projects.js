@@ -6,7 +6,7 @@ const Workspace = require('../models/Workspace');
 // @access  Private
 exports.getProjects = async (req, res, next) => {
     try {
-        const projects = await Project.find({ owner: req.user.id });
+        const projects = await Project.find();
 
         res.status(200).json({
             success: true,
@@ -32,10 +32,8 @@ exports.getProject = async (req, res, next) => {
             return res.status(404).json({ success: false, error: 'Project not found' });
         }
 
-        // Make sure user is project owner
-        if (project.owner.toString() !== req.user.id && req.user.role !== 'admin') {
-            return res.status(401).json({ success: false, error: 'Not authorized to access this project' });
-        }
+        // Ownership check removed to allow all users to access projects
+
 
         res.status(200).json({
             success: true,
@@ -94,10 +92,8 @@ exports.updateProject = async (req, res, next) => {
             return res.status(404).json({ success: false, error: 'Project not found' });
         }
 
-        // Make sure user is project owner
-        if (project.owner.toString() !== req.user.id && req.user.role !== 'admin') {
-            return res.status(401).json({ success: false, error: 'Not authorized to update this project' });
-        }
+        // Ownership check removed to allow all users to update projects
+
 
         project = await Project.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
@@ -127,10 +123,8 @@ exports.deleteProject = async (req, res, next) => {
             return res.status(404).json({ success: false, error: 'Project not found' });
         }
 
-        // Make sure user is project owner
-        if (project.owner.toString() !== req.user.id && req.user.role !== 'admin') {
-            return res.status(401).json({ success: false, error: 'Not authorized to delete this project' });
-        }
+        // Ownership check removed to allow all users to delete projects
+
 
         await project.deleteOne();
 

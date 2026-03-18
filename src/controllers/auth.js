@@ -60,6 +60,24 @@ exports.login = async (req, res, next) => {
     }
 };
 
+// @desc    Get all users
+// @route   GET /api/auth/users
+// @access  Public
+exports.getAllUsers = async (req, res, next) => {
+    try {
+        const users = await User.find({}).select('-password');
+        res.status(200).json({
+            success: true,
+            users
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
@@ -69,6 +87,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 
     res.status(statusCode).json({
         success: true,
-        token
+        token,
+        user
     });
 };

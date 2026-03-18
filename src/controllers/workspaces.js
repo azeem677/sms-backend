@@ -6,12 +6,7 @@ const Workspace = require('../models/Workspace');
 exports.getWorkspaces = async (req, res, next) => {
     try {
         // Find workspaces where user is owner or a member
-        const workspaces = await Workspace.find({
-            $or: [
-                { owner: req.user.id },
-                { 'members.user': req.user.id }
-            ]
-        }).populate('members.user', 'name email').populate('projects');
+        const workspaces = await Workspace.find().populate('members.user', 'name email').populate('projects');
 
         res.status(200).json({
             success: true,

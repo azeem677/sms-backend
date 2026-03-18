@@ -1,7 +1,9 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const http = require('http');
 const connectDB = require('./config/db');
+const socketHandler = require('./socket');
 
 // Load env vars
 dotenv.config();
@@ -10,6 +12,16 @@ dotenv.config();
 connectDB();
 
 const app = express();
+const server = http.createServer(app);
+
+// Initialize Socket.io
+const io = socketHandler(server);
+
+// Attach io to req
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
 
 // Body parser
 app.use(express.json());
@@ -21,6 +33,8 @@ app.use(cors());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/projects', require('./routes/projects'));
 app.use('/api/workspaces', require('./routes/workspaces'));
+app.use('/api/chat', require('./routes/chat'));
+app.use('/api/tasks', require('./routes/tasks'));
 
 // Test route
 app.get('/', (req, res) => {
@@ -29,6 +43,7 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
+

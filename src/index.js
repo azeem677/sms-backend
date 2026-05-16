@@ -9,7 +9,20 @@ const socketHandler = require('./socket');
 dotenv.config();
 
 // Connect to database
-connectDB();
+connectDB().then(async () => {
+    // Seed AI Assistant user
+    const User = require('./models/User');
+    const aiUser = await User.findOne({ email: 'ai.assistant@system.com' });
+    if (!aiUser) {
+        await User.create({
+            name: 'AI Project Assistant',
+            email: 'ai.assistant@system.com',
+            password: 'ai_assistant_password_secure_123', // Doesn't matter because no one logs in as AI
+            role: 'user'
+        });
+        console.log('AI Assistant user created');
+    }
+});
 
 const app = express();
 const server = http.createServer(app);
@@ -46,4 +59,6 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
+
+module.exports = app;
 
